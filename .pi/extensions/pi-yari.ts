@@ -37,7 +37,7 @@ function loadConfig(ctx: ExtensionContext): Config {
 
 export default function (pi: ExtensionAPI) {
   let threshold = DEFAULT_THRESHOLD;
-  let reasoningThreshold: number | null = null;
+  let thinkingBudget: number | null = null;
   let messages = [...DEFAULT_MESSAGES];
 
   // Repetition tracker: null means no active streak
@@ -54,7 +54,7 @@ export default function (pi: ExtensionAPI) {
       messages = config.messages;
     }
     if (typeof config.thinkingBudget === "number" && config.thinkingBudget > 0) {
-      reasoningThreshold = config.thinkingBudget;
+      thinkingBudget = config.thinkingBudget;
     }
   });
 
@@ -65,11 +65,11 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.on("message_update", async (event, ctx) => {
-    if (reasoningThreshold === null || reasoningAborted) return;
+    if (thinkingBudget === null || reasoningAborted) return;
 
     for (const part of event.message.content ?? []) {
       if (part.type === "thinking" && typeof part.thinking === "string") {
-        if (part.thinking.length >= reasoningThreshold) {
+        if (part.thinking.length >= thinkingBudget) {
           reasoningAborted = true;
           const msg = messages[Math.floor(Math.random() * messages.length)];
           ctx.abort();
