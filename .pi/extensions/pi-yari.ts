@@ -53,6 +53,7 @@ export default function (pi: ExtensionAPI) {
     if (typeof config.thinkingMaxChars === "number" && config.thinkingMaxChars > 0) {
       thinkingMaxChars = config.thinkingMaxChars;
     }
+    tracker = null; // Reset tracker on new user chat message
   });
 
   pi.on("message_update", async (event, ctx) => {
