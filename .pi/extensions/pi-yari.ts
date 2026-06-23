@@ -39,7 +39,6 @@ export default function (pi: ExtensionAPI) {
   let threshold = DEFAULT_THRESHOLD;
   let thinkingBudget: number | null = null;
   let messages = [...DEFAULT_MESSAGES];
-
   // Repetition tracker: null means no active streak
   let tracker: { toolName: string; argsKey: string; count: number } | null = null;
 
@@ -58,17 +57,12 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("message_update", async (event, ctx) => {
     if (thinkingBudget === null) return;
-
     for (const part of event.message.content ?? []) {
       if (part.type === "thinking" && typeof part.thinking === "string") {
         if (part.thinking.length >= thinkingBudget) {
           ctx.abort();
           const msg = messages[Math.floor(Math.random() * messages.length)];
-          pi.sendMessage({
-            customType: "pi-yari",
-            content: msg,
-            display: true,
-          });
+          pi.sendMessage({ customType: "pi-yari", content: msg, display: true });
           return;
         }
       }
@@ -80,17 +74,10 @@ export default function (pi: ExtensionAPI) {
     const argsKey = JSON.stringify(
       Object.entries(input).sort(([a], [b]) => a.localeCompare(b))
     );
-
     if (tracker?.toolName === event.toolName && tracker?.argsKey === argsKey) {
-      tracker.count++;
-
-      if (tracker.count >= threshold) {
+      if (++tracker.count >= threshold) {
         const warnMsg = messages[Math.floor(Math.random() * messages.length)];
-        pi.sendMessage({
-          customType: "pi-yari",
-          content: warnMsg,
-          display: true,
-        });
+        pi.sendMessage({ customType: "pi-yari", content: warnMsg, display: true });
         tracker = null; // reset counter after warning
       }
     } else {
