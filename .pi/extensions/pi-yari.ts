@@ -11,6 +11,7 @@ const DEFAULT_MESSAGES = [
 interface Config {
   threshold?: number;
   messages?: string[];
+  thinkingBudget?: number;
 }
 
 function loadConfig(ctx: ExtensionContext): Config {
@@ -36,10 +37,13 @@ function loadConfig(ctx: ExtensionContext): Config {
 
 export default function (pi: ExtensionAPI) {
   let threshold = DEFAULT_THRESHOLD;
+  let reasoningThreshold: number | null = null;
   let messages = [...DEFAULT_MESSAGES];
 
   // Repetition tracker: null means no active streak
   let tracker: { toolName: string; argsKey: string; count: number } | null = null;
+  // Reasoning length tracker
+  let reasoningAborted = false;
 
   pi.on("session_start", async (_event, ctx) => {
     const config = loadConfig(ctx);
@@ -48,6 +52,36 @@ export default function (pi: ExtensionAPI) {
     }
     if (Array.isArray(config.messages) && config.messages.length > 0) {
       messages = config.messages;
+    }
+    if (typeof config.thinkingBudget === "number" && config.thinkingBudget > 0) {
+      reasoningThreshold = config.thinkingBudget;
+    }
+  });
+
+  pi.on("message_start", async (event, _ctx) => {
+    if (event.message.role === "assistant") {
+      reasoningAborted = false;
+    }
+  });
+
+  pi.on("message_update", async (event, ctx) => {
+    if (reasoningThreshold === null || reasoningAborted) return;
+
+    for (const part of event.message.content ?? []) {
+      if (part.type === "thinking" && typeof part.thinking === "string") {
+        if (part.thinking.length >= reasoningThreshold) {
+          reasoningAborted = true;
+          const msg = messages[Math.floor(Math.random() * messages.length)];
+          ctx.abort();
+          const warnMsg = messages[Math.floor(Math.random() * messages.length)];
+          pi.sendMessage({
+            customType: "pi-yari",
+            content: warnMsg,
+            display: true,
+          });
+          return;
+        }
+      }
     }
   });
 
@@ -61,10 +95,10 @@ export default function (pi: ExtensionAPI) {
       tracker.count++;
 
       if (tracker.count >= threshold) {
-        const msg = messages[Math.floor(Math.random() * messages.length)];
+        const warnMsg = messages[Math.floor(Math.random() * messages.length)];
         pi.sendMessage({
           customType: "pi-yari",
-          content: msg,
+          content: warnMsg,
           display: true,
         });
         tracker = null; // reset counter after warning
