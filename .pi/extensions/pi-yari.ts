@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 const DEFAULT_THRESHOLD = 3;
+const DEFAULT_THINKING_MAX_CHARS = 25000;
 const DEFAULT_MESSAGES = [
   "Repetition warning: It seems like you might be stuck in a loop.",
   "Are you stuck? Maybe try a different approach.",
@@ -11,12 +12,11 @@ const DEFAULT_MESSAGES = [
 interface Config {
   threshold?: number;
   messages?: string[];
-  thinkingBudget?: number;
+  thinkingMaxChars?: number;
 }
 
 function loadConfig(ctx: ExtensionContext): Config {
   const config: Config = {};
-
   // Try project-local first
   const projectPath = path.join(ctx.cwd, ".pi", "extensions", "pi-yari.json");
   if (fs.existsSync(projectPath)) {
@@ -37,7 +37,7 @@ function loadConfig(ctx: ExtensionContext): Config {
 
 export default function (pi: ExtensionAPI) {
   let threshold = DEFAULT_THRESHOLD;
-  let thinkingBudget: number | null = null;
+  let thinkingMaxChars = DEFAULT_THINKING_MAX_CHARS;
   let messages = [...DEFAULT_MESSAGES];
   // Repetition tracker: null means no active streak
   let tracker: { toolName: string; argsKey: string; count: number } | null = null;
@@ -50,16 +50,15 @@ export default function (pi: ExtensionAPI) {
     if (Array.isArray(config.messages) && config.messages.length > 0) {
       messages = config.messages;
     }
-    if (typeof config.thinkingBudget === "number" && config.thinkingBudget > 0) {
-      thinkingBudget = config.thinkingBudget;
+    if (typeof config.thinkingMaxChars === "number" && config.thinkingMaxChars > 0) {
+      thinkingMaxChars = config.thinkingMaxChars;
     }
   });
 
   pi.on("message_update", async (event, ctx) => {
-    if (thinkingBudget === null) return;
     for (const part of event.message.content ?? []) {
       if (part.type === "thinking" && typeof part.thinking === "string") {
-        if (part.thinking.length >= thinkingBudget) {
+        if (part.thinking.length >= thinkingMaxChars) {
           ctx.abort();
           const msg = messages[Math.floor(Math.random() * messages.length)];
           pi.sendMessage({ customType: "pi-yari", content: msg, display: true });
