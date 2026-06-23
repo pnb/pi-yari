@@ -57,11 +57,7 @@ export default function (pi: ExtensionAPI) {
       Object.entries(input).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    if (
-      tracker &&
-      tracker.toolName === event.toolName &&
-      tracker.argsKey === argsKey
-    ) {
+    if (tracker?.toolName === event.toolName && tracker?.argsKey === argsKey) {
       tracker.count++;
 
       if (tracker.count >= threshold) {
