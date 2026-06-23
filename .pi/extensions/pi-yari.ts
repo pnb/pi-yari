@@ -42,7 +42,7 @@ export default function (pi: ExtensionAPI) {
   // Repetition tracker: null means no active streak
   let tracker: { toolName: string; argsKey: string; count: number } | null = null;
 
-  pi.on("session_start", async (_event, ctx) => {
+  pi.on("input", async (_event, ctx) => {
     const config = loadConfig(ctx);
     if (typeof config.threshold === "number" && config.threshold > 0) {
       threshold = config.threshold;
