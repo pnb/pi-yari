@@ -42,8 +42,6 @@ export default function (pi: ExtensionAPI) {
 
   // Repetition tracker: null means no active streak
   let tracker: { toolName: string; argsKey: string; count: number } | null = null;
-  // Reasoning length tracker
-  let reasoningAborted = false;
 
   pi.on("session_start", async (_event, ctx) => {
     const config = loadConfig(ctx);
@@ -58,25 +56,17 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  pi.on("message_start", async (event, _ctx) => {
-    if (event.message.role === "assistant") {
-      reasoningAborted = false;
-    }
-  });
-
   pi.on("message_update", async (event, ctx) => {
-    if (thinkingBudget === null || reasoningAborted) return;
+    if (thinkingBudget === null) return;
 
     for (const part of event.message.content ?? []) {
       if (part.type === "thinking" && typeof part.thinking === "string") {
         if (part.thinking.length >= thinkingBudget) {
-          reasoningAborted = true;
-          const msg = messages[Math.floor(Math.random() * messages.length)];
           ctx.abort();
-          const warnMsg = messages[Math.floor(Math.random() * messages.length)];
+          const msg = messages[Math.floor(Math.random() * messages.length)];
           pi.sendMessage({
             customType: "pi-yari",
-            content: warnMsg,
+            content: msg,
             display: true,
           });
           return;
