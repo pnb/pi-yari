@@ -69,10 +69,10 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  pi.on("tool_execution_end", async (event, ctx) => {
-    const input = event.input ?? {};
+  pi.on("tool_execution_start", async (event, ctx) => {
+    const args = event.args ?? {};
     const argsKey = JSON.stringify(
-      Object.entries(input).sort(([a], [b]) => a.localeCompare(b))
+      Object.entries(args).sort(([a], [b]) => a.localeCompare(b))
     );
     if (tracker?.toolName === event.toolName && tracker?.argsKey === argsKey) {
       if (++tracker.count >= threshold) {
