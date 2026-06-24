@@ -7,6 +7,19 @@ YARI is a [pi](https://github.com/earendil-works/pi) extension that detects when
 
 YARI is intended to be short (<100 lines of code right now) so that you can easily see what it does. It also supports customizable messages (one will be randomly chosen) so that you can avoid repetition in the warnings themselves, and have a bit of fun with it.
 
+## Install it
+
+```bash
+pi install npm:pi-yari
+```
+
+Or download and place `extensions/pi-yari.ts` in one of pi's extension directories:
+
+- Project-local: `.pi/extensions/`
+- Global: `~/.pi/agent/extensions/`
+
+In any case, restart pi or do `/reload`.
+
 ## Config options
 
 YARI will look for a project `.pi/extensions/pi-yari.json` configuration first, or `~/.pi/agent/extensions/pi-yari.json` if that doesn't exist. The config file is optional and all keys are optional. These are the defaults:
@@ -21,12 +34,3 @@ YARI will look for a project `.pi/extensions/pi-yari.json` configuration first, 
   ]
 }
 ```
-
-## Install
-
-Place `pi-yari.ts` (and optionally `pi-yari.json`) in one of pi's extension directories:
-
-- **Project-local:** `.pi/extensions/`
-- **Global:** `~/.pi/agent/extensions/`
-
-Reload with `/reload`.

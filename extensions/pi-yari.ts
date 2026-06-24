@@ -1,4 +1,4 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { CONFIG_DIR_NAME, type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -18,14 +18,14 @@ interface Config {
 function loadConfig(ctx: ExtensionContext): Config {
   const config: Config = {};
   // Try project-local first
-  const projectPath = path.join(ctx.cwd, ".pi", "extensions", "pi-yari.json");
+  const projectPath = path.join(ctx.cwd, CONFIG_DIR_NAME, "extensions", "pi-yari.json");
   if (fs.existsSync(projectPath)) {
     Object.assign(config, JSON.parse(fs.readFileSync(projectPath, "utf-8")));
   } else {
     // Fall back to global
     const home = process.env.HOME || process.env.USERPROFILE;
     if (home) {
-      const globalPath = path.join(home, ".pi", "agent", "extensions", "pi-yari.json");
+      const globalPath = path.join(home, CONFIG_DIR_NAME, "agent", "extensions", "pi-yari.json");
       if (fs.existsSync(globalPath)) {
         Object.assign(config, JSON.parse(fs.readFileSync(globalPath, "utf-8")));
       }
