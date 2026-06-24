@@ -18,11 +18,11 @@ Or download and place `extensions/pi-yari.ts` in one of pi's extension directori
 - Project-local: `.pi/extensions/`
 - Global: `~/.pi/agent/extensions/`
 
-In any case, restart pi or do `/reload`.
+In any case, restart pi or do `/reload`. You can check if it works by asking the agent to do something like "Run ls 3 times in a row".
 
 ## Config options
 
-YARI will look for a project `.pi/extensions/pi-yari.json` configuration first, or `~/.pi/agent/extensions/pi-yari.json` if that doesn't exist. The config file is optional and all keys are optional. These are the defaults:
+YARI will look for a project `.pi/pi-yari.json` configuration first, or `~/.pi/agent/pi-yari.json` if that doesn't exist. The config file is optional and all keys are optional. These are the defaults:
 
 ```json
 {
