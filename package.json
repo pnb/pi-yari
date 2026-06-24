@@ -2,13 +2,22 @@
   "name": "pi-yari",
   "version": "1.0.0",
   "description": "YARI (Yet Another Repetition Intervention). Interrupts agent tool loops and runaway/stuck thinking.",
-  "keywords": ["pi-package", "stuck", "loop", "looping", "repetition", "runaway"],
+  "keywords": [
+    "pi-package",
+    "stuck",
+    "loop",
+    "looping",
+    "repetition",
+    "runaway"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/pnb/pi-yari"
+    "url": "git+https://github.com/pnb/pi-yari.git"
   },
   "license": "MIT",
   "pi": {
-    "extensions": ["./extensions"]
+    "extensions": [
+      "./extensions"
+    ]
   }
 }
