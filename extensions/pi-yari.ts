@@ -84,4 +84,9 @@ export default function (pi: ExtensionAPI) {
       tracker = { toolName: event.toolName, argsKey, count: 1 };
     }
   });
+
+  pi.registerCommand("yari-conf", {
+    handler: async (_, ctx) => ctx.ui.notify(
+      JSON.stringify(loadConfig(ctx), null, 2), "info"),
+  });
 }

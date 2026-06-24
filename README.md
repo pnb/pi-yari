@@ -34,3 +34,5 @@ YARI will look for a project `.pi/pi-yari.json` configuration first, or `~/.pi/a
   ]
 }
 ```
+
+Try `/yari-conf` to see the current config if you want to make sure your changes took effect.
